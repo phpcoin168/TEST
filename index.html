@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>商品頁：TW168</title>
+  <title>自動填 TGID 測試</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -19,6 +21,44 @@
   </style>
 </head>
 <body>
-  <iframe src="https://shadow168.sell.app/product/tw168"></iframe>
+
+  <!-- 嵌入 SellApp 商品頁（請替換商品網址） -->
+  <iframe id="sellappFrame" src="https://shadow168.sell.app/product/tw168"></iframe>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      // 嘗試從 Telegram WebApp 取得使用者 ID
+      let tgUserId = null;
+
+      if (window.Telegram && Telegram.WebApp?.initDataUnsafe?.user?.id) {
+        tgUserId = Telegram.WebApp.initDataUnsafe.user.id;
+        console.log("取得 Telegram 使用者 ID:", tgUserId);
+      } else {
+        console.warn("未能取得 Telegram 使用者 ID，請確認 WebApp 是從 Telegram 啟動");
+        return;
+      }
+
+      // 嘗試注入 JS 到 iframe 內的 SellApp 頁面（可能會被 CSP 攔阻）
+      const tryInjectTGID = () => {
+        const iframe = document.getElementById("sellappFrame");
+        try {
+          const doc = iframe.contentWindow.document;
+          const input = doc.querySelector('input[name="TGID"]');
+          if (input) {
+            input.value = tgUserId;
+            console.log("已寫入 TGID:", tgUserId);
+          } else {
+            console.warn("找不到 TGID 欄位，再嘗試一次...");
+            setTimeout(tryInjectTGID, 1000);
+          }
+        } catch (e) {
+          console.error("跨來源 iframe，無法注入 TGID（正常情況）");
+          // Plan B：讓 TGID 當 URL 參數傳入 SellApp 商品頁，或用你的 Landing Page 表單收集
+        }
+      };
+
+      setTimeout(tryInjectTGID, 1500); // 避免 SellApp 尚未載入完成
+    });
+  </script>
 </body>
 </html>
