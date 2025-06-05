@@ -25,10 +25,10 @@
   // 從網址取得 Telegram 使用者 ID
   const userId = new URLSearchParams(window.location.search).get("user_id") || "unknown";
 
-  // 將 user_id 填入 SellApp 欄位 key：c0fd7f23a0e8606a6acdb67ffda9040d
+  // 將 user_id 傳入欄位 key
   const sellAppProductUrl = `https://shadow168.sell.app/product/tw168?c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(userId)}`;
 
-  // 建立 iframe 並加到畫面中
+  // 加入 iframe
   const iframe = document.createElement("iframe");
   iframe.src = sellAppProductUrl;
   document.body.appendChild(iframe);
