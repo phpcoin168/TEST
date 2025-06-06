@@ -1,37 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>立即購買 eSIM</title>
+  <meta charset="UTF-8" />
+  <title>eSIM 自動購買</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- 引入 SellApp 样式 -->
   <link href="https://cdn.sell.app/embed/style.css" rel="stylesheet" />
-
-  <!-- 引入 SellApp JavaScript -->
-  <script src="https://cdn.sell.app/embed/script.js" type="module"></script>
 </head>
 <body>
+  <p style="text-align:center; padding-top: 2rem;">正在載入購買視窗，請稍候...</p>
+
+  <script src="https://cdn.sell.app/embed/script.js" type="module"></script>
   <script>
-    // 從網址取得 UID
-    const uid = new URLSearchParams(window.location.search).get("uid");
+    // 等待 DOM 完成 + SellApp Script Ready
+    document.addEventListener("DOMContentLoaded", () => {
+      const checkReady = () => {
+        if (window.sellApp && typeof window.sellApp.open === "function") {
+          const params = new URLSearchParams(window.location.search);
+          const uid = params.get("uid");
 
-    // 等待 SellApp 初始化完畢後自動打開商品購買彈窗
-    window.addEventListener("sellApp:ready", () => {
-      if (!uid) {
-        alert("錯誤：缺少 Telegram UID");
-        return;
-      }
+          if (!uid) {
+            document.body.innerHTML = "<h3 style='text-align:center;'>❌ 錯誤：缺少 UID 參數</h3>";
+            return;
+          }
 
-      // 自動觸發購買視窗，並預填 UID 至指定自訂欄位
-      window.sellApp.open({
-        store: "62397",
-        product: "303422",
-        darkmode: false,
-        fields: {
-          "additional-c0fd7f23a0e8606a6acdb67ffda9040d": uid  // TGID 對應的欄位 ID
+          // 觸發購買視窗
+          window.sellApp.open({
+            store: "62397",
+            product: "303422",
+            darkmode: false,
+            fields: {
+              "additional-c0fd7f23a0e8606a6acdb67ffda9040d": uid
+            }
+          });
+        } else {
+          setTimeout(checkReady, 100); // 等待 script.js 載入完成
         }
-      });
+      };
+
+      checkReady();
     });
   </script>
 </body>
