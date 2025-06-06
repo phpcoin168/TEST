@@ -1,10 +1,37 @@
-<script>
-  const userId = new URLSearchParams(window.location.search).get("user_id") || "unknown";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>立即購買 eSIM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SellApp Embed Style -->
+  <link href="https://cdn.sell.app/embed/style.css" rel="stylesheet" />
+  
+  <!-- SellApp Embed Script -->
+  <script src="https://cdn.sell.app/embed/script.js" type="module"></script>
+</head>
+<body>
+  <script>
+    // 讀取 URL 中的 uid 參數
+    function getUidFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("uid") || "";
+    }
 
-  const iframe = document.createElement("iframe");
-  iframe.src = `https://shadow168.sell.app/product/tw168?c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(userId)}`;
-  iframe.style.width = "100%";
-  iframe.style.height = "100%";
-  iframe.style.border = "none";
-  document.body.appendChild(iframe);
-</script>
+    // 等待 SellApp 腳本準備好後，自動開啟購買彈窗
+    window.addEventListener("sellApp:ready", () => {
+      const uid = getUidFromUrl();
+
+      window.sellApp.open({
+        store: "62397",
+        product: "303422",
+        darkmode: false,
+        fields: {
+          "additional-c0fd7f23a0e8606a6acdb67ffda9040d": uid
+        }
+      });
+    });
+  </script>
+</body>
+</html>
