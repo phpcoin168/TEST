@@ -12,7 +12,7 @@
       background-color: #f9f9f9;
       font-family: sans-serif;
     }
-    #frame {
+    iframe {
       width: 100%;
       height: 100%;
       border: none;
@@ -33,11 +33,12 @@
     const product = params.get("product");
 
     if (uid && product) {
-      const fullUrl = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
+      const target = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
       const iframe = document.createElement("iframe");
-      iframe.id = "frame";
-      iframe.src = fullUrl;
-      document.body.innerHTML = ""; // 清除 loading
+      iframe.src = target;
+      iframe.onload = () => {
+        document.getElementById("loading").remove();
+      };
       document.body.appendChild(iframe);
     } else {
       document.getElementById("loading").innerHTML = "<strong>錯誤：網址缺少 uid 或 product 參數。</strong>";
