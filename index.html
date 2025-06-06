@@ -25,30 +25,29 @@
   </style>
 </head>
 <body>
-  <div id="loading">正在載入購買頁面，請稍候…</div>
+  <div id="loading">正在載入購買頁面，請稍候...</div>
   <script>
     const params = new URLSearchParams(window.location.search);
     const uid = params.get("uid");
     const productKey = params.get("product");
 
-    // 你所有商品對應的網址（可擴充）
+    // 所有商品代碼與 SellApp 商品網址對照表（可新增）
     const productMap = {
       "tw168": "https://shadow168.sell.app/product/tw168",
       "111": "https://shadow168.sell.app/product/111"
     };
 
-    const fieldId = "c0fd7f23a0e8606a6acdb67ffda9040d"; // TGID 專用欄位
-
     if (uid && productKey && productMap[productKey]) {
-      const sellAppUrl = `${productMap[productKey]}?additional-${fieldId}=${encodeURIComponent(uid)}`;
+      const baseUrl = productMap[productKey];
+      const fullUrl = `${baseUrl}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
       const iframe = document.createElement("iframe");
       iframe.id = "frame";
-      iframe.src = sellAppUrl;
+      iframe.src = fullUrl;
       document.body.innerHTML = "";
       document.body.appendChild(iframe);
     } else {
       document.getElementById("loading").innerText =
-        "錯誤：缺少必要參數（uid 或 product）或商品代碼錯誤";
+        "錯誤：缺少必要參數，或商品代碼錯誤。";
     }
   </script>
 </body>
