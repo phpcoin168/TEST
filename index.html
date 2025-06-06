@@ -1,37 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>立即購買 eSIM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- SellApp Embed Style -->
-  <link href="https://cdn.sell.app/embed/style.css" rel="stylesheet" />
-  
-  <!-- SellApp Embed Script -->
-  <script src="https://cdn.sell.app/embed/script.js" type="module"></script>
+  <meta charset="UTF-8" />
+  <title>eSIM 購買頁</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #f9f9f9;
+      font-family: sans-serif;
+    }
+    #frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #loading {
+      text-align: center;
+      padding: 2em;
+      font-size: 1.2em;
+    }
+  </style>
 </head>
 <body>
+  <div id="loading">正在載入購買頁面，請稍候...</div>
   <script>
-    // 讀取 URL 中的 uid 參數
-    function getUidFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("uid") || "";
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get("uid");
+
+    if (uid) {
+      const sellAppUrl = `https://shadow168.sell.app/product/tw168?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
+      const iframe = document.createElement("iframe");
+      iframe.id = "frame";
+      iframe.src = sellAppUrl;
+      document.body.innerHTML = ""; // 清空 loading 訊息
+      document.body.appendChild(iframe);
+    } else {
+      document.getElementById("loading").innerText = "錯誤：網址缺少 uid 參數";
     }
-
-    // 等待 SellApp 腳本準備好後，自動開啟購買彈窗
-    window.addEventListener("sellApp:ready", () => {
-      const uid = getUidFromUrl();
-
-      window.sellApp.open({
-        store: "62397",
-        product: "303422",
-        darkmode: false,
-        fields: {
-          "additional-c0fd7f23a0e8606a6acdb67ffda9040d": uid
-        }
-      });
-    });
   </script>
 </body>
 </html>
