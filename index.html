@@ -9,8 +9,8 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #f9f9f9;
       font-family: sans-serif;
+      background-color: #f9f9f9;
     }
     iframe {
       width: 100%;
@@ -33,16 +33,32 @@
     const product = params.get("product");
 
     if (uid && product) {
-      const target = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
+      const url = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
       const iframe = document.createElement("iframe");
-      iframe.src = target;
+      iframe.src = url;
       iframe.onload = () => {
-        document.getElementById("loading").remove();
+        document.getElementById("loading")?.remove();
       };
       document.body.appendChild(iframe);
     } else {
-      document.getElementById("loading").innerHTML = "<strong>錯誤：網址缺少 uid 或 product 參數。</strong>";
+      document.getElementById("loading").innerHTML = "<strong>錯誤：缺少 uid 或 product。</strong>";
     }
+
+    // --- 拦截「返回鍵」動作 ---
+    history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", () => {
+      try {
+        window.close(); // 嘗試直接關閉頁面
+      } catch (e) {
+        // 無法關閉頁面時，顯示提示
+        document.body.innerHTML = `
+          <div style="text-align:center;padding:50px;font-size:18px;">
+            ❌ 此頁面已失效<br><br>
+            請回到 <strong>Telegram 機器人</strong> 重新獲取購買連結
+          </div>
+        `;
+      }
+    });
   </script>
 </body>
 </html>
