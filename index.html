@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>eSIM 購買頁</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
@@ -17,96 +17,38 @@
       height: 100%;
       border: none;
     }
-    #header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      padding: 10px;
-      z-index: 1000;
+    #loading {
       text-align: center;
-      border-bottom: 1px solid #ccc;
-    }
-    #header button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    #content {
-      padding-top: 60px;
+      padding: 2em;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <div id="header">
-    <strong>選擇商品：</strong>
-    <button onclick="changeProduct('tw168')">商品 A</button>
-    <button onclick="changeProduct('111')">商品 B</button>
-  </div>
-
-  <div id="content">
-    <div id="loading" style="text-align:center; padding:2em;">正在載入購買頁面...</div>
-  </div>
-
+  <div id="loading">正在載入購買頁面，請稍候...</div>
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get("uid");
+    const productKey = params.get("product");
+
+    // 所有商品代碼與 SellApp 商品網址對照表（可新增）
     const productMap = {
       "tw168": "https://shadow168.sell.app/product/tw168",
       "111": "https://shadow168.sell.app/product/111"
     };
 
-    const params = new URLSearchParams(window.location.search);
-    let uid = params.get("uid");
-    let product = params.get("product");
-
-    function loadProductFrame(prod, userId) {
-      if (!productMap[prod] || !userId) {
-        document.getElementById("loading").innerText = "錯誤：缺少商品或 UID";
-        return;
-      }
-
-      const sellAppUrl = `${productMap[prod]}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(userId)}`;
+    if (uid && productKey && productMap[productKey]) {
+      const baseUrl = productMap[productKey];
+      const fullUrl = `${baseUrl}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
       const iframe = document.createElement("iframe");
       iframe.id = "frame";
-      iframe.src = sellAppUrl;
-
-      const contentDiv = document.getElementById("content");
-      contentDiv.innerHTML = "";
-      contentDiv.appendChild(iframe);
-    }
-
-    function changeProduct(newProduct) {
-      const url = new URL(window.location);
-      const uid = new URLSearchParams(window.location.search).get("uid");
-
-      if (!uid) {
-        alert("UID 缺失，請從 Telegram 正確點擊連結進入！");
-        return;
-      }
-
-      // 更新網址不刷新頁面
-      const newParams = new URLSearchParams({ uid, product: newProduct });
-      const newUrl = `${url.pathname}?${newParams.toString()}`;
-      history.pushState({ product: newProduct, uid: uid }, '', newUrl);
-
-      // 重新載入商品
-      loadProductFrame(newProduct, uid);
-    }
-
-    // 第一次載入
-    if (uid && product && productMap[product]) {
-      loadProductFrame(product, uid);
+      iframe.src = fullUrl;
+      document.body.innerHTML = "";
+      document.body.appendChild(iframe);
     } else {
-      document.getElementById("loading").innerText = "請透過 Telegram Bot 正確進入頁面";
+      document.getElementById("loading").innerText =
+        "錯誤：缺少必要參數，或商品代碼錯誤。";
     }
-
-    // 當使用者按返回或前進，根據 pushState 恢復頁面狀態
-    window.addEventListener("popstate", (event) => {
-      if (event.state && event.state.product && event.state.uid) {
-        loadProductFrame(event.state.product, event.state.uid);
-      }
-    });
   </script>
 </body>
 </html>
