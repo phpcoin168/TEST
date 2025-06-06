@@ -1,54 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>eSIM 購買頁</title>
+  <meta charset="UTF-8">
+  <title>立即購買 eSIM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: #f9f9f9;
-      font-family: sans-serif;
-    }
-    #frame {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    #loading {
-      text-align: center;
-      padding: 2em;
-      font-size: 1.2em;
-    }
-  </style>
+
+  <!-- 引入 SellApp 样式 -->
+  <link href="https://cdn.sell.app/embed/style.css" rel="stylesheet" />
+
+  <!-- 引入 SellApp JavaScript -->
+  <script src="https://cdn.sell.app/embed/script.js" type="module"></script>
 </head>
 <body>
-  <div id="loading">正在載入購買頁面，請稍候...</div>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get("uid");
-    const productKey = params.get("product");
+    // 從網址取得 UID
+    const uid = new URLSearchParams(window.location.search).get("uid");
 
-    // 所有商品代碼與 SellApp 商品網址對照表（可新增）
-    const productMap = {
-      "tw168": "https://shadow168.sell.app/product/tw168",
-      "111": "https://shadow168.sell.app/product/111"
-    };
+    // 等待 SellApp 初始化完畢後自動打開商品購買彈窗
+    window.addEventListener("sellApp:ready", () => {
+      if (!uid) {
+        alert("錯誤：缺少 Telegram UID");
+        return;
+      }
 
-    if (uid && productKey && productMap[productKey]) {
-      const baseUrl = productMap[productKey];
-      const fullUrl = `${baseUrl}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
-      const iframe = document.createElement("iframe");
-      iframe.id = "frame";
-      iframe.src = fullUrl;
-      document.body.innerHTML = "";
-      document.body.appendChild(iframe);
-    } else {
-      document.getElementById("loading").innerText =
-        "錯誤：缺少必要參數，或商品代碼錯誤。";
-    }
+      // 自動觸發購買視窗，並預填 UID 至指定自訂欄位
+      window.sellApp.open({
+        store: "62397",
+        product: "303422",
+        darkmode: false,
+        fields: {
+          "additional-c0fd7f23a0e8606a6acdb67ffda9040d": uid  // TGID 對應的欄位 ID
+        }
+      });
+    });
   </script>
 </body>
 </html>
