@@ -41,23 +41,23 @@
       };
       document.body.appendChild(iframe);
     } else {
-      document.getElementById("loading").innerHTML = "<strong>錯誤：缺少 uid 或 product。</strong>";
+      document.getElementById("loading").innerHTML = "<strong>❌ 錯誤：缺少 uid 或 product。</strong>";
     }
 
-    // --- 拦截「返回鍵」動作 ---
+    // -- 返回鍵保護：關不掉就跳回 Telegram --
     history.pushState(null, "", window.location.href);
     window.addEventListener("popstate", () => {
       try {
-        window.close(); // 嘗試直接關閉頁面
+        window.close(); // 嘗試關閉視窗（部分環境有效）
       } catch (e) {
-        // 無法關閉頁面時，顯示提示
-        document.body.innerHTML = `
-          <div style="text-align:center;padding:50px;font-size:18px;">
-            ❌ 此頁面已失效<br><br>
-            請回到 <strong>Telegram 機器人</strong> 重新獲取購買連結
-          </div>
-        `;
+        // 若無效，自動跳回 Telegram Bot
+        window.location.href = "https://t.me/aaa123987bot";
       }
+
+      // 避免無效 close，直接跳回 Telegram（保險）
+      setTimeout(() => {
+        window.location.href = "https://t.me/aaa123987bot";
+      }, 500);
     });
   </script>
 </body>
