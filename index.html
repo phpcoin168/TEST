@@ -9,10 +9,10 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: sans-serif;
       background-color: #f9f9f9;
+      font-family: sans-serif;
     }
-    iframe {
+    #frame {
       width: 100%;
       height: 100%;
       border: none;
@@ -33,32 +33,15 @@
     const product = params.get("product");
 
     if (uid && product) {
-      const url = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
+      const fullUrl = `https://shadow168.sell.app/product/${product}?additional-c0fd7f23a0e8606a6acdb67ffda9040d=${encodeURIComponent(uid)}`;
       const iframe = document.createElement("iframe");
-      iframe.src = url;
-      iframe.onload = () => {
-        document.getElementById("loading")?.remove();
-      };
+      iframe.id = "frame";
+      iframe.src = fullUrl;
+      document.body.innerHTML = ""; // 清除 loading
       document.body.appendChild(iframe);
     } else {
-      document.getElementById("loading").innerHTML = "<strong>❌ 錯誤：缺少 uid 或 product。</strong>";
+      document.getElementById("loading").innerHTML = "<strong>錯誤：網址缺少 uid 或 product 參數。</strong>";
     }
-
-    // -- 返回鍵保護：關不掉就跳回 Telegram --
-    history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", () => {
-      try {
-        window.close(); // 嘗試關閉視窗（部分環境有效）
-      } catch (e) {
-        // 若無效，自動跳回 Telegram Bot
-        window.location.href = "https://t.me/aaa123987bot";
-      }
-
-      // 避免無效 close，直接跳回 Telegram（保險）
-      setTimeout(() => {
-        window.location.href = "https://t.me/aaa123987bot";
-      }, 500);
-    });
   </script>
 </body>
 </html>
